@@ -1,7 +1,7 @@
 module RspecApiDocumentation
   class HttpClient < ClientBase
 
-    delegate :last_request, :last_response, :to => :rack_test_session
+    delegate :last_request, :last_response, :to => :http_session
     private :last_request, :last_response
 
     def request_headers
@@ -35,7 +35,7 @@ module RspecApiDocumentation
     protected
 
     def do_request(method, path, params, request_headers)
-      rack_test_session.send(method, path, params, headers(method, path, params, request_headers))
+      http_session.send(method, path, params, headers(method, path, params, request_headers))
     end
 
     def headers(*args)
@@ -67,15 +67,8 @@ module RspecApiDocumentation
       request_body
     end
 
-    def rack_test_session
-      @rack_test_session ||= Struct.new(:app) do
-        begin
-          require "rack/test"
-          include Rack::Test::Methods
-        rescue LoadError
-          raise "#{self.class.name} requires Rack::Test >= 0.5.5. Please add it to your test dependencies."
-        end
-      end.new(app)
+    def http_session
+      @http_session ||= HttpSession.new()
     end
   end
 end
