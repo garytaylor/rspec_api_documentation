@@ -75,6 +75,10 @@ module RspecApiDocumentation::DSL
       @client ||= RspecApiDocumentation::RackTestClient.new(self)
     end
 
+    def http_client
+      @client ||= RspecApiDocumentation::HttpTestClient.new(self)
+    end
+
     def no_doc(&block)
       requests = example.metadata[:requests]
       example.metadata[:requests] = []
